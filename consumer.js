@@ -11,13 +11,20 @@ amqp.connect('amqp://localhost', (error0, connection) => {
     if (error1) {
       throw error1;
     }
-
+  //If you set durable: false for the queue, the queue does not survive a RabbitMQ server restart.
     channel.assertQueue(queue, { durable: false });
 
-    console.log(" messages will be displayed here: ", queue);
+    console.log("Waiting for messages in queue:", queue);
 
     channel.consume(queue, (msg) => {
-      console.log(" Message is : ", msg.content.toString());
-    }, { noAck: true });
+      if (msg !== null) {
+        console.log("Received message:", msg.content.toString());
+        // Acknowledge the message (RabbitMQ knows it has been received)
+        channel.ack(msg);
+      }
+    }, {
+      // Automatically acknowledge receipt of messages
+      noAck: false
+    });
   });
 });
