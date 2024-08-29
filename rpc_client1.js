@@ -8,6 +8,8 @@ amqp.connect('amqp://localhost', function(err, conn) {
     replyQueue.then(function(q) {
       const replyQueueName = q.queue;
 
+      console.log('reply queue name',replyQueueName)
+
       channel.consume(replyQueueName, function(msg) {
         if (msg.properties.correlationId === correlationId) {
           console.log("Received response: ", msg.content.toString());
